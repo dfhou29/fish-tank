@@ -27,7 +27,7 @@ class Denizen {
   update(t) {
     // if you're out of bounds, despawn
     if (this.outOfBounds(this.tank.getBounds())) {
-      this.kill();
+      this.makeNewVelocity(50);
     } else {
       for (var i = 0; i < this.calcPhysicsTicks(t); i++) {
         this.updateOneTick();
@@ -62,12 +62,16 @@ class Denizen {
   }
 
   outOfBounds(bounds) {
-    // TODO: it'd be cool if Seeds could go above the top fo the tank, then fall back down
     return (
       this.position.x + 5 * this.width < bounds.minX ||
       this.position.x - 5 * this.width > bounds.maxX ||
       this.position.y + 5 * this.height < bounds.minY ||
       this.position.y - 5 * this.height > bounds.maxY
     );
+  }
+
+  makeNewVelocity(minMag) {
+    this.swimVelocity = this.generateSwimVelocity(this.maxSwimSpeed, minMag || 0);
+    this.timeUntilSpeedChange = randRangeInt(5);
   }
 }

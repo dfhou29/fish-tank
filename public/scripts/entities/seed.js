@@ -24,6 +24,14 @@ class Seed extends Denizen {
     }
   }
 
+  updateOneTickAfterOut() {
+    this.velocity = this.velocity.scale( 1 - this.waterFriction * PHYSICS_TICK_SIZE_S );
+    this.velocity.y += 50 * PHYSICS_TICK_SIZE_S;
+
+    var delta = this.velocity.scale(PHYSICS_TICK_SIZE_S);
+    this.position = this.position.add(delta);
+  }
+
   spawn() {
     var Type = this.type;
     var individual = new Type({
@@ -35,6 +43,27 @@ class Seed extends Denizen {
   onClick(event) {
     this.spawn();
     this.kill();
+  }
+
+  outOfTopBounds(bounds) {
+    return (
+      this.position.y - 5 * this.height > bounds.maxY
+    );
+  }
+
+  update(t) {
+    // if you're out of bounds, despawn
+    if (this.outOfBounds(this.tank.getBounds())) {
+      if (this.outOfTopBounds(this.tank.getBounds())) {
+        this.updateOneTickAfterOut();
+      } else {
+        this.kill();
+      }
+    } else {
+      for (var i = 0; i < this.calcPhysicsTicks(t); i++) {
+        this.updateOneTick();
+      }
+    }
   }
 
 }
